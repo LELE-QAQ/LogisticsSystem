@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--加载外部资源-->
+    <context:property-placeholder location="classpath:config/properties/db.properties"/>
+
+    <!--数据库连接池-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="maxActive" value="10"/>
+        <property name="minIdle" value="5"/>
+    </bean>
+
+    <!--让spring管理sqlSessionFactory-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!--mybatis全局配置文件-->
+        <property name="configLocation" value="classpath:config/mybatis/mybatis-config.xml"/>
+        <!--映射文件和接口文件不在同一个目录下的时候
+        它的spring是不会去扫描jar包中的相应目录的，只会去他当前项目下获取。其实要改变这种情况很简单，
+        在classpath后面加一个*号，*号的作用是让spring的扫描涉及全个目录包括jar-->
+        <property name="mapperLocations" value="classpath*:config/mapper/*.xml"/>
+    </bean>
+
+    <!--Mapper接口的包扫描-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.kl.manager.dao"/>
+    </bean>
+</beans>

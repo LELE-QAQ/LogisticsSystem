@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+
+    <!--1.配置securityManager-->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="shiroRealm"/>
+    </bean>
+
+    <!--2.配置Realm-->
+    <bean id="shiroRealm" class="com.kl.manager.web.realm.ShiroRealm">
+        <property name="credentialsMatcher">
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <property name="hashAlgorithmName" value="MD5"/>
+                <property name="hashIterations" value="1024"/>
+            </bean>
+        </property>
+    </bean>
+
+
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+        <property name="loginUrl" value="/loginPage.do"/>
+        <!--<property name="successUrl" value="/main"/>
+        <property name="unauthorizedUrl" value="/failed"/>-->
+        <property name="filterChainDefinitions">
+            <value>
+                <!--加载顺序从上往下。
+                    authc需要认证
+                    anon可以匿名访问的资源
+                 -->
+                / = anon
+                /login = anon
+                /images/** = anon
+                /css/** = anon
+                /js/** = anon
+                /lib/** = anon
+                /loginPage.do = anon
+                /login.do = anon
+                /** = authc
+            </value>
+        </property>
+    </bean>
+
+</beans>
